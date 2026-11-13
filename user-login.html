@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#f4f7fb" />
+  <title>User Sign in · PolicyHub</title>
+  <link rel="stylesheet" href="user-login.css" />
+</head>
+<body>
+  <div class="page">
+    <header class="topbar">
+      <a class="brand" href="user-login.html" aria-label="PolicyHub user sign in">
+        <span class="brand-mark" aria-hidden="true"><svg width="19" height="19" viewBox="0 0 24 24" fill="none"><path d="M12 3 19 6v5c0 4.7-2.9 8.2-7 10-4.1-1.8-7-5.3-7-10V6l7-3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="m9 12 2 2 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        PolicyHub
+      </a>
+    </header>
+    <main>
+      <section class="login-card" aria-labelledby="login-title">
+        <p class="eyebrow">User access</p>
+        <h1 id="login-title">Sign in to your account</h1>
+        <p class="intro">Enter your credentials to view your assigned policies and documents.</p>
+        <form id="user-login-form" action="./user.html" method="get">
+          <div class="field"><label for="username">User Name</label><input id="username" type="text" autocomplete="username" placeholder="Enter your user name" required /></div>
+          <div class="field">
+            <div class="password-label"><label for="password">Password</label><a class="forgot" href="#">Forgot password?</a></div>
+            <input id="password" type="password" autocomplete="current-password" placeholder="Enter your password" required />
+          </div>
+          <button type="submit">Sign in</button>
+        </form>
+        <p class="note">Secure access to your assigned PolicyHub documents</p>
+        <p class="account-switch">Administrator? <a href="index.html">Administrator sign in</a></p>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

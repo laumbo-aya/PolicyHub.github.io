@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#f4f7fb" />
+  <title>My Workspace · PolicyHub</title>
+  <link rel="stylesheet" href="user.css" />
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <a class="brand" href="user.html" aria-label="PolicyHub user home"><span class="brand-mark" aria-hidden="true"><svg width="19" height="19" viewBox="0 0 24 24" fill="none"><path d="M12 3 19 6v5c0 4.7-2.9 8.2-7 10-4.1-1.8-7-5.3-7-10V6l7-3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="m9 12 2 2 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span>PolicyHub</span></a>
+    <div class="nav-label">My workspace</div>
+    <nav class="nav" aria-label="User navigation">
+      <button class="active" data-view="dashboard"><svg viewBox="0 0 24 24" fill="none"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.7"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.7"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.7"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.7"/></svg>Dashboard</button>
+      <button data-view="status"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.7"/><path d="M12 7v5l3 2m-8 5 2-2 2 1 2-2 2 1 3-3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>Document Status</button>
+      <button data-view="library"><svg viewBox="0 0 24 24" fill="none"><path d="M5 4.5A1.5 1.5 0 0 1 6.5 3H20v16H6.5A1.5 1.5 0 0 0 5 20.5v-16Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M5 17.5A1.5 1.5 0 0 1 6.5 16H20M9 7h7M9 10h7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>Document Library</button>
+    </nav>
+    <div class="sidebar-foot"><a href="admin.html">← Administrator workspace</a><br />PolicyHub · My documents</div>
+  </aside>
+  <div class="main">
+    <header class="topbar"><div class="crumb">My Workspace <span>/</span> <strong id="crumb-current">Dashboard</strong></div><div class="top-actions"><div class="avatar">JD</div><div class="profile-details"><div class="profile-name">Jordan Davis</div><div class="profile-role">Operations</div></div><a class="sign-out" href="user-login.html">Sign out</a></div></header>
+    <main class="content">
+      <section class="view active" id="view-dashboard">
+        <div class="heading"><div><h1>My Dashboard</h1><p>Hi Jordan, here's your policy acknowledgment overview.</p></div><div class="date" id="today"></div></div>
+        <div class="metrics">
+          <article class="metric"><div class="metric-head">Acknowledged Documents <span class="metric-icon green"><svg viewBox="0 0 24 24" fill="none"><path d="m5 12 4.5 4.5L19 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div><div class="value" id="ack-count">0</div><div class="trend">Documents you've confirmed</div></article>
+          <article class="metric"><div class="metric-head">Pending to Acknowledge <span class="metric-icon amber"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.7"/><path d="M12 7v5l3 2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div><div class="value" id="pending-count">0</div><div class="trend">Documents that need your attention</div></article>
+        </div>
+        <section class="panel assigned-panel"><div class="panel-head"><div><h2>My Assigned Documents</h2><p>Policies and guidance assigned to you.</p></div><button class="text-button" data-go="library">View document library →</button></div><div class="table-wrap"><table><thead><tr><th>Document</th><th>Category</th><th>Due date</th><th>Status</th><th></th></tr></thead><tbody id="dashboard-docs"></tbody></table></div></section>
+      </section>
+      <section class="view" id="view-status">
+        <div class="heading"><div><h1>Document Status</h1><p>Track your acknowledgments and review outstanding documents.</p></div></div>
+        <section class="panel"><div class="panel-head filter-head"><div><h2>Assigned document status</h2><p>Choose a status to filter your list.</p></div><div class="filters" role="group" aria-label="Filter documents"><button class="filter active" data-filter="all">All</button><button class="filter" data-filter="pending">Pending</button><button class="filter" data-filter="acknowledged">Acknowledged</button></div></div><div class="table-wrap"><table><thead><tr><th>Document</th><th>Category</th><th>Due date</th><th>Status</th><th>Action</th></tr></thead><tbody id="status-docs"></tbody></table></div></section>
+      </section>
+      <section class="view" id="view-library">
+        <div class="heading"><div><h1>Document Library</h1><p>Browse the documents assigned to your account.</p></div></div>
+        <section class="panel"><div class="panel-head library-tools"><div><h2>Assigned documents</h2><p id="library-count"></p></div><input class="search" id="library-search" type="search" placeholder="Search your documents…" aria-label="Search assigned documents" /></div><div class="library-grid" id="library-cards"></div></section>
+      </section>
+    </main>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+</div>
+<script>
+  const storageKey='policyhub.user.documents.v1',uploadedDocsKey='policyhub.uploaded.documents.v1';
+  const initialDocuments=[
+    {id:'DOC-014',title:'Information Security Policy',category:'Policies',due:'Nov 30, 2026',version:'3.2',acknowledged:true},
+    {id:'DOC-012',title:'Remote Work Guidelines',category:'Guidelines',due:'Nov 20, 2026',version:'2.0',acknowledged:false},
+    {id:'DOC-009',title:'Data Retention Standard',category:'Standards',due:'Nov 24, 2026',version:'1.4',acknowledged:false},
+    {id:'DOC-006',title:'Workplace Conduct Policy',category:'Policies',due:'Dec 05, 2026',version:'2.1',acknowledged:true},
+    {id:'DOC-003',title:'Business Continuity Plan',category:'Procedures',due:'Dec 12, 2026',version:'1.1',acknowledged:false}
+  ];
+  let documents;try{const saved=JSON.parse(localStorage.getItem(storageKey));documents=Array.isArray(saved)?saved:initialDocuments}catch{documents=initialDocuments}
+  function syncUploadedDocs(){try{const uploaded=JSON.parse(localStorage.getItem(uploadedDocsKey));if(!Array.isArray(uploaded))return;const known=new Set(documents.map(doc=>doc.id));uploaded.slice().reverse().forEach(doc=>{if(!known.has(doc.id)){documents.unshift({...doc,acknowledged:false});known.add(doc.id)}})}catch{}}
+  function escapeHtml(value){return String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]))}
+  const buttons=[...document.querySelectorAll('.nav button')],views=[...document.querySelectorAll('.view')];let activeFilter='all';const toast=document.getElementById('toast');let toastTimer;
+  function notify(message){toast.textContent=message;toast.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>toast.classList.remove('show'),2400)}
+  function navigate(name){buttons.forEach(button=>button.classList.toggle('active',button.dataset.view===name));views.forEach(view=>view.classList.toggle('active',view.id==='view-'+name));document.getElementById('crumb-current').textContent={dashboard:'Dashboard',status:'Document Status',library:'Document Library'}[name];window.scrollTo({top:0,behavior:'smooth'})}
+  function statusBadge(doc){return doc.acknowledged?'<span class="badge acknowledged">Acknowledged</span>':'<span class="badge pending">Pending</span>'}
+  function documentRows(list,includeAction){if(!list.length)return '<tr><td colspan="5" class="empty">No assigned documents match this view.</td></tr>';return list.map(doc=>`<tr><td><span class="doc-title">${escapeHtml(doc.title)}</span><span class="sub">${escapeHtml(doc.id)} · Version ${escapeHtml(doc.version)}</span></td><td>${escapeHtml(doc.category)}</td><td>${escapeHtml(doc.due)}</td><td>${statusBadge(doc)}</td><td>${includeAction&&!doc.acknowledged?`<button class="ack-button" data-ack="${escapeHtml(doc.id)}">Acknowledge</button>`:''}</td></tr>`).join('')}
+  function render(){const acknowledged=documents.filter(doc=>doc.acknowledged).length,pending=documents.length-acknowledged;document.getElementById('ack-count').textContent=acknowledged;document.getElementById('pending-count').textContent=pending;document.getElementById('dashboard-docs').innerHTML=documentRows(documents.slice(0,4),true);const filtered=activeFilter==='all'?documents:documents.filter(doc=>activeFilter==='pending'?!doc.acknowledged:doc.acknowledged);document.getElementById('status-docs').innerHTML=documentRows(filtered,true);const query=document.getElementById('library-search').value.trim().toLowerCase(),matches=documents.filter(doc=>`${doc.title} ${doc.category} ${doc.id}`.toLowerCase().includes(query));document.getElementById('library-count').textContent=`${matches.length} assigned ${matches.length===1?'document':'documents'}`;document.getElementById('library-cards').innerHTML=matches.map(doc=>`<article class="library-card"><div class="card-top"><span class="file-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M6 3.5h8l4 4v13H6a2 2 0 0 1-2-2v-13a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M14 3.5v5h5M8 13h8m-8 3h8" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>${statusBadge(doc)}</div><h3>${escapeHtml(doc.title)}</h3><p>${escapeHtml(doc.category)} · Version ${escapeHtml(doc.version)}</p><div class="card-bottom"><span>Due ${escapeHtml(doc.due)}</span>${!doc.acknowledged?`<button class="ack-button" data-ack="${escapeHtml(doc.id)}">Acknowledge</button>`:'<span class="done">✓ Confirmed</span>'}</div></article>`).join('')||'<p class="empty">No documents found.</p>';document.querySelectorAll('[data-ack]').forEach(button=>button.addEventListener('click',()=>acknowledge(button.dataset.ack)))}
+  function acknowledge(id){const doc=documents.find(item=>item.id===id);if(!doc||doc.acknowledged)return;doc.acknowledged=true;localStorage.setItem(storageKey,JSON.stringify(documents));if(String(id).startsWith('UPL-')){try{const uploaded=JSON.parse(localStorage.getItem(uploadedDocsKey))||[];localStorage.setItem(uploadedDocsKey,JSON.stringify(uploaded.map(item=>item.id===id?{...item,acknowledged:true}:item)))}catch{}}render();notify('Document acknowledged.')}
+  buttons.forEach(button=>button.addEventListener('click',()=>navigate(button.dataset.view)));document.querySelectorAll('[data-go]').forEach(button=>button.addEventListener('click',()=>navigate(button.dataset.go)));document.querySelectorAll('[data-filter]').forEach(button=>button.addEventListener('click',()=>{activeFilter=button.dataset.filter;document.querySelectorAll('[data-filter]').forEach(item=>item.classList.toggle('active',item===button));render()}));document.getElementById('library-search').addEventListener('input',render);document.getElementById('today').textContent=new Intl.DateTimeFormat('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric'}).format(new Date());syncUploadedDocs();render();window.addEventListener('storage',event=>{if(event.key===uploadedDocsKey){syncUploadedDocs();render()}});window.addEventListener('policyhub-documents-updated',()=>{syncUploadedDocs();render()});
+</script>
+</body>
+</html>

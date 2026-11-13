@@ -35,3 +35,9 @@
     button:focus-visible, a:focus-visible { outline: 3px solid #9ab0ff; outline-offset: 3px; }
     .note { margin: 23px 0 0; color: #8491a3; font-size: 12px; text-align: center; }
     @media (max-width: 480px) { .topbar { height: 66px; } .login-card { padding: 30px 24px; } h1 { font-size: 26px; } }
+
+.account-switch{margin:12px 0 0;color:#718096;font-size:12px;text-align:center}.account-switch a{color:#315ee8;font-weight:650;text-decoration:none}.account-switch a:hover{text-decoration:underline}
+
+
+.portal-link{display:flex;align-items:center;justify-content:space-between;width:100%;margin-top:14px;padding:12px 14px;border:1px solid #dce5ff;border-radius:9px;background:#f7f8ff;color:#315ee8;font-size:13px;font-weight:700;text-decoration:none;transition:background .16s,border-color .16s}.portal-link:hover{background:#eef2ff;border-color:#b9c9ff}.portal-link span{font-size:17px;line-height:1}
+
