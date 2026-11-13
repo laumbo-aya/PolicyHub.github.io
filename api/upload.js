@@ -2,15 +2,14 @@ import { randomUUID, timingSafeEqual } from 'node:crypto';
 import { put } from '@vercel/blob';
 
 const MAX_BYTES = 4 * 1024 * 1024;
-const ALLOWED_TYPES = new Set([
-  'application/pdf',
-  'application/msword',
-  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-  'application/vnd.ms-excel',
-  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-  'application/octet-stream',
-]);
-const ALLOWED_EXTENSIONS = new Set(['.pdf', '.doc', '.docx', '.xls', '.xlsx']);
+const MIME_BY_EXTENSION = {
+  '.pdf': 'application/pdf',
+  '.doc': 'application/msword',
+  '.docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  '.xls': 'application/vnd.ms-excel',
+  '.xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+};
+const ALLOWED_TYPES = new Set([...Object.values(MIME_BY_EXTENSION), 'application/octet-stream']);
 
 function json(response, status, body) {
   response.statusCode = status;
@@ -59,7 +58,7 @@ export default async function handler(request, response) {
   const filename = safeFilename(url.searchParams.get('filename'));
   const extension = filename.includes('.') ? filename.slice(filename.lastIndexOf('.')).toLowerCase() : '';
   const contentType = String(request.headers['content-type'] || 'application/octet-stream').split(';')[0].toLowerCase();
-  if (!ALLOWED_EXTENSIONS.has(extension) || !ALLOWED_TYPES.has(contentType)) {
+  if (!MIME_BY_EXTENSION[extension] || !ALLOWED_TYPES.has(contentType)) {
     return json(response, 415, { error: 'Upload a PDF, DOC, DOCX, XLS, or XLSX file.' });
   }
 
@@ -67,19 +66,35 @@ export default async function handler(request, response) {
   if (declaredLength > MAX_BYTES) return json(response, 413, { error: 'Maximum file size is 4 MB.' });
 
   try {
-    const chunks = [];
-    let total = 0;
-    for await (const chunk of request) {
-      total += chunk.length;
-      if (total > MAX_BYTES) return json(response, 413, { error: 'Maximum file size is 4 MB.' });
-      chunks.push(chunk);
+    let fileBuffer;
+    const parsedBody = request.body;
+    if (Buffer.isBuffer(parsedBody)) {
+      fileBuffer = parsedBody;
+    } else if (parsedBody instanceof Uint8Array) {
+      fileBuffer = Buffer.from(parsedBody);
+    } else if (typeof parsedBody === 'string') {
+      fileBuffer = Buffer.from(parsedBody);
+    } else {
+      const chunks = [];
+      let streamedBytes = 0;
+      for await (const chunk of request) {
+        const buffer = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk);
+        streamedBytes += buffer.length;
+        if (streamedBytes > MAX_BYTES) {
+          return json(response, 413, { error: 'Maximum file size is 4 MB.' });
+        }
+        chunks.push(buffer);
+      }
+      fileBuffer = Buffer.concat(chunks);
     }
+    const total = fileBuffer.length;
+    if (total > MAX_BYTES) return json(response, 413, { error: 'Maximum file size is 4 MB.' });
     if (!total) return json(response, 400, { error: 'The uploaded file is empty.' });
 
     const pathname = `policyhub-test-documents/${randomUUID()}-${filename}`;
-    const blob = await put(pathname, Buffer.concat(chunks), {
+    const blob = await put(pathname, fileBuffer, {
       access: 'private',
-      contentType,
+      contentType: MIME_BY_EXTENSION[extension],
       addRandomSuffix: false,
     });
 
