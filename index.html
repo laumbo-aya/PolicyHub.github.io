@@ -24,8 +24,8 @@
         <p class="intro">Enter your credentials to manage your PolicyHub workspace.</p>
         <form id="login-form" action="./admin.html" method="get">
           <div class="field">
-            <label for="username">User Name</label>
-            <input id="username" type="text" autocomplete="username" placeholder="Enter your user name" required />
+            <label for="email">Email Address</label>
+            <input id="email" name="email" type="email" autocomplete="username" placeholder="Enter your email address" required />
           </div>
           <div class="field">
             <div class="password-label">
@@ -36,17 +36,15 @@
           </div>
           <button type="submit">Sign in</button>
         </form>
+        <p id="login-result" class="login-result" role="status" aria-live="polite"></p>
         <p class="note">Secure access to your policy workspace</p>
         <a class="portal-link" href="user-login.html">Sign in to the User Portal <span aria-hidden="true">→</span></a>
       </section>
     </main>
   </div>
-<script>
-  document.getElementById('login-form').addEventListener('submit', event => {
-    event.preventDefault();
-    window.location.assign(new URL('./admin.html', document.baseURI).href);
-  });
-</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-client.js"></script>
+<script src="auth-login.js"></script>
 </body>
 </html>
 

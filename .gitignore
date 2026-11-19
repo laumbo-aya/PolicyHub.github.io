@@ -1,5 +1,7 @@
 node_modules/
-.vercel/
+.supabase/
+supabase/.temp/
+supabase/functions/.env
 .env
 .env.*
 !.env.example

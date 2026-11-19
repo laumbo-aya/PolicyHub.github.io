@@ -40,4 +40,5 @@
 
 
 .portal-link{display:flex;align-items:center;justify-content:space-between;width:100%;margin-top:14px;padding:12px 14px;border:1px solid #dce5ff;border-radius:9px;background:#f7f8ff;color:#315ee8;font-size:13px;font-weight:700;text-decoration:none;transition:background .16s,border-color .16s}.portal-link:hover{background:#eef2ff;border-color:#b9c9ff}.portal-link span{font-size:17px;line-height:1}
+.login-result{min-height:18px;margin:10px 0 0;color:#66758b;font-size:12px;line-height:1.5}.login-result[data-state="error"]{color:#b23a48}.login-result[data-state="success"]{color:#25895d}
 

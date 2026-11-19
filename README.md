@@ -1,17 +1,22 @@
-# PolicyHub
+# PolicyHub with Supabase
 
-Static HTML/CSS PolicyHub demo with a Vercel Node Function for private test document uploads.
+PolicyHub uses Supabase Auth for sign-in, Postgres for profiles/documents/assignments, and a private Storage bucket for document files. The browser uses the project's publishable key in `supabase-client.js`; access is controlled by Row Level Security in `supabase/schema.sql`.
 
-## Deploy to Vercel
+## Supabase project setup
 
-1. Push this project to a Git repository you control, then import that repository from the Vercel dashboard.
-2. In the Vercel project, create a **private Vercel Blob** store and connect it to the project’s production environment. Vercel Functions use the connected store credentials at runtime.
-3. In **Project Settings → Environment Variables**, add `POLICYHUB_UPLOAD_KEY` with a unique random value at least 32 characters long. Do not commit the key to Git.
-4. Deploy or redeploy the project after connecting Blob and setting the key.
-5. Open **Upload Document** in the admin page. Enter the same upload key and select a PDF, DOC, DOCX, XLS, or XLSX file up to 4 MB.
+1. In the Supabase SQL Editor for project `iktuopjqnlkecntenrwj`, run `supabase/schema.sql`. This creates the profiles, document, assignment, and timer tables; RLS policies; reading/acknowledgment RPCs; and the private `policyhub-documents` bucket.
+2. In **Authentication → Users**, create the first administrator account. Then run the final bootstrap statement from `supabase/schema.sql` with that account's email to promote its profile to `admin`.
+3. In **Edge Function Secrets**, set `POLICYHUB_SITE_URL` to the deployed PolicyHub origin. From a terminal with the Supabase CLI installed, run `supabase link --project-ref iktuopjqnlkecntenrwj` and `supabase functions deploy invite-user`. The function uses Supabase's server-side secret context and checks the caller's admin role before sending invitations. Never put a secret/service-role key in the browser.
+4. In **Authentication → URL Configuration**, set the Site URL to the deployed PolicyHub origin and add the origin plus `/reset-password.html` to the redirect allow list.
+5. Deploy the static files. Sign in as the promoted admin, invite user accounts, and upload documents. Each published document is assigned to all active user accounts.
 
-Uploaded files are stored privately under `policyhub-test-documents/` in Vercel Blob. After a successful upload, the document appears in the Administrator Document Library and is assigned to the sample user, Jordan Davis, in the User Portal. The demo document list and acknowledgment state use browser local storage, so they sync between pages in the same browser but are not shared across browsers or devices. Review or delete stored test files from the Blob store in Vercel. The login screens are demo navigation only and do not authenticate users; the upload endpoint separately checks the test key.
+## App behavior
 
-## Local preview
+- Administrator and User sign-ins use Supabase email/password authentication.
+- Uploaded files are saved in a private Storage bucket. Users can read only assigned files; Administrators can read and manage all documents.
+- The Administrator can set the required reading time from 1 to 120 minutes. The database records reading start time and refuses early acknowledgments.
+- User invitations are sent by the `invite-user` Edge Function. The browser client cannot create or delete Auth accounts directly.
+- Deactivating a user disables their PolicyHub access while preserving their profile and acknowledgment history.
+- PDF files open in the reader; Word and Excel files open in a separate document viewer/download.
 
-The HTML pages can be opened directly for UI preview. The upload endpoint requires Vercel Functions and a connected Vercel Blob store, so actual file uploads work after deployment or under the Vercel development environment with Blob credentials configured.
+The frontend uses the Supabase JavaScript CDN build. The Supabase publishable key is public by design; do not use a `sb_secret_...` or `service_role` key in any browser file. Keep RLS enabled and apply the SQL setup before deployment.

@@ -21,17 +21,21 @@
         <h1 id="login-title">Sign in to your account</h1>
         <p class="intro">Enter your credentials to view your assigned policies and documents.</p>
         <form id="user-login-form" action="./user.html" method="get">
-          <div class="field"><label for="username">User Name</label><input id="username" type="text" autocomplete="username" placeholder="Enter your user name" required /></div>
+          <div class="field"><label for="email">Email Address</label><input id="email" name="email" type="email" autocomplete="username" placeholder="Enter your email address" required /></div>
           <div class="field">
             <div class="password-label"><label for="password">Password</label><a class="forgot" href="#">Forgot password?</a></div>
             <input id="password" type="password" autocomplete="current-password" placeholder="Enter your password" required />
           </div>
           <button type="submit">Sign in</button>
         </form>
+        <p id="login-result" class="login-result" role="status" aria-live="polite"></p>
         <p class="note">Secure access to your assigned PolicyHub documents</p>
         <p class="account-switch">Administrator? <a href="index.html">Administrator sign in</a></p>
       </section>
     </main>
   </div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-client.js"></script>
+<script src="auth-login.js"></script>
 </body>
 </html>
